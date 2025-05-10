@@ -1,33 +1,73 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    android:padding="16dp">
 
+    <!-- Header (Logo + App Name) -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="App Logo"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Tasks"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+    </LinearLayout>
+
+    <!-- Task List -->
     <ListView
         android:id="@+id/tasksListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/buttonSignOut"/>
+        android:layout_below="@id/headerLayout"
+        android:layout_above="@id/buttonAddTask"
+        android:divider="#CCCCCC"
+        android:dividerHeight="1dp"
+        android:padding="8dp" />
 
-
+    <!-- Add Task Button -->
     <Button
         android:id="@+id/buttonAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Task"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:onClick="onAddTaskClicked"
-        android:layout_marginBottom="64dp"/>
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="12dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:backgroundTint="#4CAF50"/>
 
+    <!-- Sign Out Button -->
     <Button
         android:id="@+id/buttonSignOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign Out"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_alignParentBottom="true" />
-
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/white"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:backgroundTint="#F44336"
+        android:background="@drawable/rounded_button"
+        android:layout_margin="8dp"/>
 </RelativeLayout>
