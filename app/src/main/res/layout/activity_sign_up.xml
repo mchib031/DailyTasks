@@ -56,6 +56,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sign Up"
+            android:backgroundTint="#4CAF50"
+            android:textColor="@android:color/white"
             android:layout_marginTop="20dp" />
+        <Button
+            android:id="@+id/buttonLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Login"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#004d99"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 </LinearLayout>
