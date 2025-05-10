@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -16,6 +15,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import android.os.AsyncTask;
+import android.widget.TextView;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> tasks;
@@ -27,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        TextView quoteText = findViewById(R.id.quoteText);
+        new FetchQuoteTask(quoteText).execute();
+
 
         Button signOutButton = findViewById(R.id.buttonSignOut);
         signOutButton.setOnClickListener(v -> signOut());
@@ -111,5 +123,46 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         finish(); // Finish MainActivity
     }
+
+    private static class FetchQuoteTask extends AsyncTask<Void, Void, String> {
+        private final TextView textView;
+
+        public FetchQuoteTask(TextView textView) {
+            this.textView = textView;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            try {
+                URL url = new URL("https://zenquotes.io/api/random");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+
+                JSONArray jsonArray = new JSONArray(response.toString());
+                JSONObject quoteObj = jsonArray.getJSONObject(0);
+                return "\"" + quoteObj.getString("q") + "\"\n- " + quoteObj.getString("a");
+
+            } catch (Exception e) {
+                return "Could not fetch quote 😞";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            textView.setText(result);
+        }
+    }
+
 
 }
