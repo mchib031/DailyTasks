@@ -1,10 +1,12 @@
 package com.example.dailytasks;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 public class TaskDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "tasks.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
 
     public static final String TABLE_TASKS = "tasks";
     public static final String COLUMN_ID = "id";
@@ -21,7 +23,7 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
 
 
     public static final String TABLE_USERS = "users";
-    public static final String COLUMN_USER_ID = "id";
+    public static final String COLUMN_USER_ID = "user_id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
 
@@ -40,16 +42,25 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         String TABLE_CREATE = "CREATE TABLE " + TABLE_TASKS + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
-                COLUMN_STATUS + " TEXT NOT NULL)";
+                COLUMN_STATUS + " TEXT NOT NULL, " +
+                COLUMN_USER_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "))"; // Optional foreign key constraint if you have a user table
+
+
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(TABLE_CREATE);
+
     }
+
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
+        db.execSQL("DROP TABLE IF EXISTS tasks");
         onCreate(db);
     }
+
+
 
     // Add task
     public void addTask(Task task) {
@@ -57,9 +68,10 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_DESCRIPTION, task.getDescription());
         values.put(COLUMN_STATUS, task.getStatus());
-
+        values.put("user_id", task.getUserId());
         db.insert(TABLE_TASKS, null, values);
         db.close();
+
     }
 
     // Get all tasks
@@ -115,12 +127,11 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USERNAME, username);
-        values.put(COLUMN_PASSWORD, password); // In real apps, hash this
+        values.put(COLUMN_PASSWORD, password);
         db.insert(TABLE_USERS, null, values);
         db.close();
     }
 
-    // Authenticate user credentials and return their user ID, or -1 if invalid
     public int authenticateUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -141,6 +152,30 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return userId;
     }
+
+    public List<Task> getTasksByUserId(int userId) {
+        List<Task> taskList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM tasks WHERE user_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") Task task = new Task(cursor.getString(cursor.getColumnIndex("description")),
+                            cursor.getString(cursor.getColumnIndex("status")),
+                            cursor.getInt(cursor.getColumnIndex("user_id")));
+                    taskList.add(task);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return taskList;
+    }
+
+
+
+
 
 
 

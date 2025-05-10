@@ -1,6 +1,10 @@
 package com.example.dailytasks;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
+import android.util.Log;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -27,7 +31,26 @@ public class MainActivity extends AppCompatActivity {
         tasksListView = findViewById(R.id.tasksListView);
         dbHelper = new TaskDatabaseHelper(this);
 
-        tasks = new ArrayList<>(dbHelper.getAllTasks());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("PRAGMA table_info(tasks);", null);
+        while (cursor.moveToNext()) {
+            Log.d("DB_SCHEMA", "Column: " + cursor.getString(1));
+        }
+        cursor.close();
+
+
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+        if (userId == -1) {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+            finish(); // Close the activity and return to login
+            return;
+        }
+
+
+        tasks = new ArrayList<>(dbHelper.getTasksByUserId(userId));
+
 
         // Set up the adapter for ListView
         adapter = new TaskAdapter(this, tasks, dbHelper);
@@ -36,43 +59,39 @@ public class MainActivity extends AppCompatActivity {
         // Load the tasks initially
         loadTasks();
 
-        // Handle item click (you can add logic here to edit or delete a task)
+        Log.d("MainActivity", "Loaded tasks for userId " + userId + ": " + tasks.size() + " tasks");
+
         tasksListView.setOnItemClickListener((parent, view, position, id) -> {
-            // Add logic to edit or delete task
         });
     }
 
-    // Method to load tasks from the database
     private void loadTasks() {
-        // Fetch tasks from DB
-        List<Task> taskList = dbHelper.getAllTasks();
-        List<String> taskDescriptions = new ArrayList<>();
-        for (Task task : taskList) {
-            taskDescriptions.add(task.getDescription());
-        }
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
 
-        // Update the adapter to display tasks
-        adapter.clear();
-        tasks.addAll(dbHelper.getAllTasks());
-        adapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
+        if (userId == -1) return;
+
+        List<Task> taskList = dbHelper.getTasksByUserId(userId);
+        Log.d("MainActivity", "Fetched tasks from DB for userId " + userId + ": " + taskList.size());
+
+
+        tasks.clear();
+        tasks.addAll(taskList);
+        adapter.notifyDataSetChanged();
     }
 
-    // Handle result from AddTaskActivity
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Check if the result is OK and from the AddTaskActivity
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            // Reload tasks from the database after task is added
             loadTasks();
         }
     }
 
-    // Launch AddTaskActivity when the add button is clicked
     public void onAddTaskClicked(View view) {
-        // Start AddTaskActivity and expect a result
         Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
-        startActivityForResult(intent, 1); // Start AddTaskActivity and expect a result
+        startActivityForResult(intent, 1);
     }
 }

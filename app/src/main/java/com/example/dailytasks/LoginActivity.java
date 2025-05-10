@@ -34,12 +34,9 @@ public class LoginActivity extends Activity {
 
                 int userId = dbHelper.authenticateUser(username, password);
                 if (userId != -1) {
-                    // Save user session
                     SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
                     prefs.edit().putInt("userId", userId).apply();
-
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 } else {
