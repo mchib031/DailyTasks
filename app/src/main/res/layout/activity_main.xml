@@ -6,8 +6,10 @@
     <ListView
         android:id="@+id/tasksListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"/>
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/buttonSignOut"/>
+
 
     <Button
         android:id="@+id/buttonAddTask"
@@ -16,6 +18,16 @@
         android:text="Add Task"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:onClick="onAddTaskClicked"/>
+        android:onClick="onAddTaskClicked"
+        android:layout_marginBottom="64dp"/>
+
+    <Button
+        android:id="@+id/buttonSignOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
