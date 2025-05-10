@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    private ArrayList<Task> tasks;
     private ListView tasksListView;
-    private ArrayAdapter<String> adapter;
+    private TaskAdapter adapter;
     private TaskDatabaseHelper dbHelper;
 
     @Override
@@ -27,8 +27,10 @@ public class MainActivity extends AppCompatActivity {
         tasksListView = findViewById(R.id.tasksListView);
         dbHelper = new TaskDatabaseHelper(this);
 
+        tasks = new ArrayList<>(dbHelper.getAllTasks());
+
         // Set up the adapter for ListView
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        adapter = new TaskAdapter(this, tasks, dbHelper);
         tasksListView.setAdapter(adapter);
 
         // Load the tasks initially
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the adapter to display tasks
         adapter.clear();
-        adapter.addAll(taskDescriptions);
+        tasks.addAll(dbHelper.getAllTasks());
         adapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
     }
 
