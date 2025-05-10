@@ -3,7 +3,7 @@ package com.example.dailytasks;
 public class Task {
     private int id;
     private String description;
-    private String status; // TO DO, IN PROGRESS, COMPLETED
+    private String status;
     private int userId;
 
     public Task() {}
@@ -11,12 +11,15 @@ public class Task {
     public Task(String description, String status, int userId) {
         this.description = description;
         this.status = status;
+        this.userId = userId;
+
     }
 
     public Task(int id, String description, String status, int userId) {
         this.id = id;
         this.description = description;
         this.status = status;
+        this.userId = userId;
     }
 
     public int getId() {
