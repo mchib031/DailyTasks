@@ -69,17 +69,17 @@
         android:backgroundTint="#4CAF50"/>
 
     <!-- Sign Out Button -->
-    <Button
+    <ImageButton
         android:id="@+id/buttonSignOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign Out"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:textColor="@android:color/white"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
+        android:layout_margin="6dp"
         android:backgroundTint="#F44336"
         android:background="@drawable/rounded_button"
-        android:layout_margin="8dp"/>
+        android:src="@drawable/signout"
+        android:contentDescription="Sign Out"
+        android:tint="@android:color/white"/>
+
 </RelativeLayout>
