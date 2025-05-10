@@ -30,12 +30,24 @@
             android:textColor="#333333" />
     </LinearLayout>
 
-    <!-- Task List -->
+    <TextView
+        android:id="@+id/quoteText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading quote..."
+        android:layout_below="@id/headerLayout"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textColor="#555555"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        />
+
     <ListView
         android:id="@+id/tasksListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_below="@id/headerLayout"
+        android:layout_below="@id/quoteText"
         android:layout_above="@id/buttonAddTask"
         android:divider="#CCCCCC"
         android:dividerHeight="1dp"
