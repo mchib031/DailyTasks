@@ -19,16 +19,29 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_STATUS = "status";
 
+
+    public static final String TABLE_USERS = "users";
+    public static final String COLUMN_USER_ID = "id";
+    public static final String COLUMN_USERNAME = "username";
+    public static final String COLUMN_PASSWORD = "password";
+
+
     public TaskDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + " (" +
+                COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_USERNAME + " TEXT UNIQUE NOT NULL, " +
+                COLUMN_PASSWORD + " TEXT NOT NULL);";
+
         String TABLE_CREATE = "CREATE TABLE " + TABLE_TASKS + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
                 COLUMN_STATUS + " TEXT NOT NULL)";
+        db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(TABLE_CREATE);
     }
 
@@ -88,4 +101,47 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_TASKS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
+
+    public boolean isUsernameTaken(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, null, COLUMN_USERNAME + " = ?", new String[]{username}, null, null, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
+    public void registerUser(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_PASSWORD, password); // In real apps, hash this
+        db.insert(TABLE_USERS, null, values);
+        db.close();
+    }
+
+    // Authenticate user credentials and return their user ID, or -1 if invalid
+    public int authenticateUser(String username, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_USERS,
+                new String[]{COLUMN_USER_ID},
+                COLUMN_USERNAME + " = ? AND " + COLUMN_PASSWORD + " = ?",
+                new String[]{username, password},
+                null, null, null
+        );
+
+        int userId = -1;
+        if (cursor.moveToFirst()) {
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID));
+        }
+
+        cursor.close();
+        db.close();
+        return userId;
+    }
+
+
+
 }
