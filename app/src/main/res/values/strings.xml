@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">DailyTasks</string>
+    <string-array name="status_array">
+        <item>TO DO</item>
+        <item>IN PROGRESS</item>
+        <item>COMPLETED</item>
+    </string-array>
 </resources>
