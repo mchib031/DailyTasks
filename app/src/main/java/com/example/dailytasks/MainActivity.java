@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         new FetchQuoteTask(quoteText).execute();
 
 
-        Button signOutButton = findViewById(R.id.buttonSignOut);
+        ImageButton signOutButton = findViewById(R.id.buttonSignOut);
         signOutButton.setOnClickListener(v -> signOut());
 
         // Initialize views

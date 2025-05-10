@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F2F2F2"
@@ -40,8 +41,7 @@
         android:textSize="16sp"
         android:textColor="#555555"
         android:layout_marginTop="16dp"
-        android:padding="8dp"
-        />
+        android:padding="8dp" />
 
     <ListView
         android:id="@+id/tasksListView"
@@ -66,7 +66,7 @@
         android:layout_marginBottom="12dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:backgroundTint="#4CAF50"/>
+        android:backgroundTint="#4CAF50" />
 
     <!-- Sign Out Button -->
     <ImageButton
@@ -80,6 +80,6 @@
         android:background="@drawable/rounded_button"
         android:src="@drawable/signout"
         android:contentDescription="Sign Out"
-        android:tint="@android:color/white"/>
+        app:tint="@android:color/white" />
 
 </RelativeLayout>
