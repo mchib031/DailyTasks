@@ -4,15 +4,16 @@ public class Task {
     private int id;
     private String description;
     private String status; // TO DO, IN PROGRESS, COMPLETED
+    private int userId;
 
     public Task() {}
 
-    public Task(String description, String status) {
+    public Task(String description, String status, int userId) {
         this.description = description;
         this.status = status;
     }
 
-    public Task(int id, String description, String status) {
+    public Task(int id, String description, String status, int userId) {
         this.id = id;
         this.description = description;
         this.status = status;
@@ -41,4 +42,7 @@ public class Task {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 }

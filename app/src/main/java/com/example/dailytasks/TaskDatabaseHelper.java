@@ -40,16 +40,22 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         String TABLE_CREATE = "CREATE TABLE " + TABLE_TASKS + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
-                COLUMN_STATUS + " TEXT NOT NULL)";
-        db.execSQL(CREATE_USERS_TABLE);
+                COLUMN_STATUS + " TEXT NOT NULL, " +
+                COLUMN_USER_ID + " INTEGER NOT NULL, " +  // New column for user_id
+                "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "))"; // Optional foreign key constraint if you have a user table
+
         db.execSQL(TABLE_CREATE);
+        db.execSQL(CREATE_USERS_TABLE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
-        onCreate(db);
+        if (oldVersion < 2) { // Ensure this upgrade happens only when the version is 2 or greater
+            db.execSQL("ALTER TABLE " + TABLE_TASKS + " ADD COLUMN " + COLUMN_USER_ID + " INTEGER NOT NULL DEFAULT 0"); // Add user_id column with default value
+        }
     }
+
 
     // Add task
     public void addTask(Task task) {
@@ -57,9 +63,10 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_DESCRIPTION, task.getDescription());
         values.put(COLUMN_STATUS, task.getStatus());
-
+        values.put("user_id", task.getUserId());
         db.insert(TABLE_TASKS, null, values);
         db.close();
+
     }
 
     // Get all tasks
@@ -141,6 +148,35 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return userId;
     }
+
+    public List<Task> getTasksByUserId(int userId) {
+        List<Task> taskList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_TASKS,
+                null,
+                "user_id = ?",
+                new String[]{String.valueOf(userId)},
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Task task = new Task();
+                task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+                task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+                task.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+                task.setUserId(userId);
+                taskList.add(task);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return taskList;
+    }
+
+
+
 
 
 

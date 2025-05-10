@@ -1,6 +1,7 @@
 package com.example.dailytasks;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -27,7 +28,18 @@ public class MainActivity extends AppCompatActivity {
         tasksListView = findViewById(R.id.tasksListView);
         dbHelper = new TaskDatabaseHelper(this);
 
-        tasks = new ArrayList<>(dbHelper.getAllTasks());
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+        if (userId == -1) {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+            finish(); // Close the activity and return to login
+            return;
+        }
+
+
+        tasks = new ArrayList<>(dbHelper.getTasksByUserId(userId));
+
 
         // Set up the adapter for ListView
         adapter = new TaskAdapter(this, tasks, dbHelper);
@@ -44,18 +56,19 @@ public class MainActivity extends AppCompatActivity {
 
     // Method to load tasks from the database
     private void loadTasks() {
-        // Fetch tasks from DB
-        List<Task> taskList = dbHelper.getAllTasks();
-        List<String> taskDescriptions = new ArrayList<>();
-        for (Task task : taskList) {
-            taskDescriptions.add(task.getDescription());
-        }
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
 
-        // Update the adapter to display tasks
+        if (userId == -1) return;
+
+        List<Task> taskList = dbHelper.getTasksByUserId(userId);
+
         adapter.clear();
-        tasks.addAll(dbHelper.getAllTasks());
-        adapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
+        tasks.clear();
+        tasks.addAll(taskList);
+        adapter.notifyDataSetChanged();
     }
+
 
     // Handle result from AddTaskActivity
     @Override

@@ -1,6 +1,7 @@
 package com.example.dailytasks;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -52,18 +53,26 @@ public class AddTaskActivity extends AppCompatActivity {
             return;
         }
 
-        // Create Task object and add it to the database
-        Task newTask = new Task(description, status);
+        // Get userId from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+        if (userId == -1) {
+            Toast.makeText(this, "User session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Create Task object and add to database
+        Task newTask = new Task(description, status, userId);
         dbHelper.addTask(newTask);
 
-        // Show a toast message to confirm task addition
+        // Show confirmation
         Toast.makeText(this, "Task added!", Toast.LENGTH_SHORT).show();
 
-        // Send the result back to MainActivity to refresh the list
-        Intent resultIntent = new Intent();
-        setResult(RESULT_OK, resultIntent); // Signal MainActivity to refresh the task list
-
-        // Finish the activity and return to MainActivity
+        // Return to MainActivity
+        setResult(RESULT_OK, new Intent());
         finish();
     }
+
 }
